@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div class="">
+      sdfdds
+    </div>
+    <script src="./jquery.js"></script>
+   <script type="text/javascript">
+
+     function funajax(method,url,data,callback,flag){
+       var xhr = null;
+       if(window.XMLHttpRequest){
+         xhr = new XMLHttpRequest();
+       }else{
+         xhr = new ActiveXObject('Microsoft.XMLHttp');
+       }
+       if(method == 'POST'){
+         xhr.open('POST',url,flag);
+         xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded')
+         xhr.send(data);
+       }else if( method == 'GET'){
+         xhr.open('GET',url +'?'+ data,flag);
+         xhr.send();
+       }
+       xhr.onreadystatechange = function(){
+         if(xhr.readyState == 4){
+           if(xhr.status == 200){
+             console.log("dsf");
+             console.log(xhr);
+             callback(xhr.responseText)
+           }
+         }
+       }
+     }
+     funajax('POST','./getPics.php','cpage=1',dodd,true)
+
+     function dodd(data){
+       console.log(data);
+     }
+     // $.post('./getPics.php','cpage=1',dodd);
+
+     // var xhr = new XMLHttpRequest();
+     // xhr.open("","./getPics.php",true);
+     // xhr.send()
+   </script>
+  </body>
+</html>

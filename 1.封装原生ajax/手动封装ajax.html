@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <button id="btn">get</button>
+    <ul id="ul"></ul>
+    <form action="">
+        <input type="text" name="username" id="username">
+        <input type="text" name="age" id="agename">
+        <input type="submit" id="sub">
+    </form>
+    <script>
+        var oBtn = document.getElementById("btn");
+        var oUl = document.getElementById("ul");
+        var oUserName = document.getElementById("username");
+        var oAgeName = document.getElementById("agename");
+        var oSub = document.getElementById("sub");
+
+        // 测试GET
+        oBtn.onclick = function(){
+            ajaxFunc("GET","./getNews.php",'name="xaohao"&age="18"',showList,true)
+        }
+        // 测试POST
+        oSub.onclick = function(e){
+            e.preventDefault();
+            var userNameValue = oUserName.value;
+            var ageValue = oAgeName.value;
+            var data = "username=" + userNameValue + "&age=" + ageValue;
+            ajaxFunc("POST","./post.php",data,showPerson,true);
+        }
+
+        function showList(data){
+            var value = JSON.parse(data);
+            var str = '';
+            value.forEach(function(ele,index){
+                str += "<li>"+ele.title+"-"+ele.date+"</li>"
+            })
+            oUl.innerHTML = str;
+        }
+        function showPerson(data){
+              alert(data);
+        }
+
+        // 封装ajax
+        function ajaxFunc(method,url,data,callback,flag){
+            //创建ajax对象
+            var xhr = null;
+            if(window.XMLHttpRequest){
+                xhr = new XMLHttpRequest();
+            }else{
+                // 兼容IE
+                xhr = new ActiveXObject('Microsoft.XMLHttp');
+            }
+            method = method.toUpperCase();
+            // flag为true表示异步，为false表示同步
+            if(method == "GET"){
+                xhr.open(method,url+'?'+data,flag);
+                xhr.send();
+            }else if(method = "POST"){
+                xhr.open(method,url,flag);
+                // POST推数据的编码格式，使用form表单的默认编码格式就OK
+                xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+                xhr.send(data);
+            }
+            // onreadyStatechange事件：监听事件状态，事件状态变化便会触发该事件，若直接xhr.status == 200 {console.log(xhr.responseText)};由于ajax是异步过程，还没请求到数据，这里便操作数据，必然是没有数据可操作的，数据为空
+            // readyState有0/1/2/3/4 共5个状态，当为4的时候，只表示信息成功返回，接下来判断是数据成功返回，还是其他信息返回；[发送请求都会有响应，但响应的可以是数据也可以是错误的信息]
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState == 4){
+                    if(xhr.status == 200){
+                        console.log(typeof xhr.responseText);//数组类型的字符串
+                        callback(xhr.responseText);
+                    }else{
+                        console.log('error');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

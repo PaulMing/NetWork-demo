@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .container{
+            width: 500px;
+            margin: 200px auto;
+        }
+        input:first-child{
+            width: 300px;
+            height: 30px;
+            padding-left: 10px;
+            font-size: 16px;
+        }
+        input[type="button"]{
+            width: 50px;
+            height: 30px;
+        }
+        .wrapper{
+            width: 315px;
+        }
+        .wrapper ul{
+            margin: 0px;
+            padding: 0px;
+            border: 2px solid #ccc;
+        }
+        .wrapper ul li{
+            padding: 5px;         
+        }
+        .wrapper ul li:hover{
+            background-color:darkgrey;
+        }
+        .wrapper ul li a{
+            font-size: 16px;
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text">
+        <input type="button" value="搜索">
+        <div class="wrapper"></div>
+    </div>
+    <script>
+        var oInp = document.getElementsByTagName('input')[0];
+        var oWrap = document.getElementsByClassName('wrapper')[0];
+        var timer = null;
+        // 渲染数据
+        function aa(data){
+            var data = data.s;  
+            var oUl = document.createElement('ul');
+            oWrap.innerHTML = '';
+            var len = null;
+            if(data.length <6){
+                len = data.length;
+            }else{
+                len = 6;
+            }
+            for(var i=0; i<len; i++){
+                var oLi = document.createElement('li');
+                oLi.innerHTML = "<a href="+"https://www.baidu.com/s?wd="+data[i]+">"+ data[i]+"</a>";
+                // oLi.innerHTML = "<a href='https://www.baidu.com/s?wd='"+data[i]+">"+ data[i]+"</a>";
+                oUl.appendChild(oLi);
+            }
+            oWrap.appendChild(oUl);
+        }
+        oInp.oninput = function(){
+            clearTimeout(timer);
+            var self = this;
+            // 防抖
+            timer = setTimeout(function(){
+                var oScript = document.createElement('script');
+                oScript.src = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?cb=aa&wd='+self.value;
+                document.body.appendChild(oScript);
+                oScript.remove();
+            },1000);
+        }
+        // 封装jsonp();
+        function jsonp(url,cbName,cb,data){
+            var oScript = docuemnt.createElement('script');
+            var src = url+"?"+cbName+"="+aa;
+            if(typeof data == "string"){
+                src += "&"+data;
+            }else{
+                for(var prop in data){
+                    if(data.hasOwnProperty(prop)){
+                        src += "&"+prop+"="+data[prop]
+                    }
+                }
+            }
+            oScript.src = src;
+            document.body.appendChild(oScript);
+            oScript.remove();
+        }
+    </script>
+</body>
+</html>

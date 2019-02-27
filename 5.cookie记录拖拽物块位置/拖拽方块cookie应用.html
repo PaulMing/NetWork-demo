@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #demo{
+            width: 100px;
+            height: 100px;
+            background: pink;
+            position: absolute;
+            top: 100px;
+            left: 100px;
+        } 
+    </style>
+</head>
+<body>
+    <!-- chrome中设置cookie值必须在浏览器端发送请求才OK，所以该文件测试环境在wampserver的www文件下 -->
+    <div id="demo"></div>
+    <script>
+        var oDemo = document.getElementById("demo");
+        // 封装操作cookie函数 -> 命名空间
+        var manageCookie = {
+            setCookie: function(name,value,time){
+                document.cookie = name + '=' + value + ";max-age="+time;
+                return this;
+            },
+            removeCookie: function(name){
+                return this.setCookie(name,'',-1);
+            },
+            getCookie: function(name,callback){
+                var allCookieArr = document.cookie.split('; ');
+                var len = allCookieArr.length;
+                for(var i=0; i< len;i++){
+                    var itemCookieArr = allCookieArr[i].split("=");
+                    if(itemCookieArr[0] == name){
+                        callback(itemCookieArr[1]);
+                        return this;
+                    }
+                }
+                callback(undefined);
+                return this;
+            }
+        }
+
+        // 使用命名空间 -> 防止污染全局
+        var drag = {
+            init: function(dom){
+                this.dom = dom;
+                var _this = this;
+                this.bindEvent();
+                manageCookie.getCookie('newLeft',function(data){
+                    _this.dom.style.left = data + 'px';
+                }).getCookie('newTop',function(data){
+                    _this.dom.style.top = data + 'px';
+                })
+            },
+            bindEvent: function(){
+                // bind();改变this指向，同call();/apply();作用相同，但其不会立即执行，call();/apply();改变this指向后会立即执行，此处使用bind();的原因，此bind();方法是原生的方法，而非jquery中的事件绑定
+                this.dom.onmousedown = this.mouseDown.bind(this);
+            },
+            mouseDown: function(e){
+                document.onmousemove = this.mouseMove.bind(this);
+                document.onmouseup = this.mouseUp.bind(this);
+
+                this.disY = e.clientY - this.dom.offsetTop;
+                this.disX = e.clientX - this.dom.offsetLeft;
+            },
+            mouseMove: function(e){
+                this.newLeft = e.clientX - this.disX;
+                this.newTop = e.clientY - this.disY;
+                this.dom.style.left = this.newLeft + 'px';
+                this.dom.style.top = this.newTop + 'px';
+            },
+            mouseUp: function(){
+                document.onmousemove = null;
+                document.onmouseup = null;
+                manageCookie.setCookie('newLeft',this.newLeft,10000).setCookie('newTop',this.newTop,10000);
+            }
+        }
+        // 执行函数
+        drag.init(oDemo);     
+    </script>  
+</body>
+</html>

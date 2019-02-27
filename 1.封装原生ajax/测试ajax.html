@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- ajax和form表单提交都是提交数据的一种方式而已 -->
+    <!-- ajax:Asynchronous javascript and xml:用javascript以异步的形式操作xml，现在操作的是json,  xml是数据格式，json也是数据格式，实际其就是object对象，只不过，键值对都要加双引号而已，属性值若是number或者boolean类型也可以不用引号，其他必须要使用引号，其是局部异步的过程，达到局部刷新 -->
+    <!-- ajax进行异步的过程请求数据时，不会阻塞页面的其它操作，允许用户进行其他操作 -->
+
+    <!-- 关于wampserver: D:\wampserver\www; www文件夹下的文件表示的便是服务器上的文件，但直接打开依旧是file:///D:/wampserver/www/index.html; file协议下表示的依旧是本地文件，所以需要使用将www前的都换成localhost即可，localhost表示的就是域名，你可以写本地ip地址也是OK的，地址栏中的http也是可以省略的(隐藏了)http://localhost/index.html;便可以了，其表示的便是本地服务器上的文件，由此就可以模仿请求数据的过程了 -->
+ 
+    <button id="btn"></button>
+    <ul id="ul"></ul>
+    <form action="">
+        <input type="text" name="username" id="username">
+        <input type="text" name="age" id="age">
+        <input type="submit" id="sub">
+    </form>
+   <script>
+        // 补充：若是使用id属性，获取元素时可直接使用id名，不用使用原生js获取元素的方式了，开发中不建议此方式
+        sub.onclick = function(e){
+            e.preventDefault();
+            var userNameValue = username.value;
+            var ageValue = age.value;
+            var data = "username=" + userNameValue + "&age=" + ageValue;       
+        }
+        btn.onclick = function(){
+            var xhr = null;
+            if(window.XMLHttpRequest){
+                xhr = new XMLHttpRequest();
+            }else{
+                xhr = new ActiveXObject('Microsoft.XMLHttp');
+            }
+            // true表示异步
+            xhr.open('GET','./getNesw.php',true);
+            xhr.send();
+            // POST请求：其还需要设置请求头(推数据的数据类型)：Content-type:内容格式/编码格式，一般写form表单默认的编码格式就OK
+            // xhr.open('POST','./post.php',true);
+            // xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+            // xhr.send('username=aimee&age=18');
+
+            // console.log(xhr.responseText());//检测异步
+        
+            xhr.onreadystatechange = function(){
+                if(xhr.readyState == 4){
+                    if(xhr.status == 200){
+                        // 成功后返回的数据为字符串类型，其是数组类型的字符串，控制台上显示的是数组类型，但其是字符串类型的数组(控制台中一般黑色字体为字符串，数字类型为蓝色，前提编辑器编码，控制台输出)
+                        console.log( typeof xhr.responseTest);//string;//数组类型的字符串
+                        // 字符串 -> json数据
+                        // var data = JSON.parse(xhr.responseText)
+                        // 为了模块化更好，封装处理数据的函数
+                        showList(xhr.responseText);                 
+                    }else{
+                        console.log('error');
+                    }
+                }
+            }     
+        }
+        function showList(data){
+            var value = JSON.parse(data);
+            var str = '';
+            value.forEach(function(ele,index){
+                str += "<li>"+ele.title+"-"+ele.date+"</li>" 
+            });
+            ul.innerHTML = str;
+        }   
+    </script>
+</body>
+</html>

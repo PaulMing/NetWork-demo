@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 同源策略下父子可互相取值 -->
+    <iframe src="./son.html" frameborder="0" name="parent"></iframe>
+    <script>
+        /*
+          同源下父子窗口获取彼此的window即可互相取值 ->wampserver环境下测试
+          子窗口window:
+               document.getElementsByTagName('iframe')[0].contentWindow.age
+               window.frames['parent'].age;//iframe的name属性，兼容性不好
+               IE专用：
+               document.iframes['parent'].contentWindow.age
+               document.iframes[i].contentWindow.age
+          父窗口window:
+               window.parent ->多个iframe框架嵌套 ->window.parent.parent.parent;或者window.top   
+        */
+        var oIframe = document.getElementsByTagName('iframe')[0];
+        // console.log(oIframe.contentWindow.age);//undefined;资源还未加载回来
+        // oIframe.onload = function(){
+        //     console.log(oIframe.contentWindow.age);
+        //     //console.log(window.frames['parent'].age);
+        // }
+
+        /*
+          非同源下：
+          子窗口获取父窗口的值：利用location.hash
+          父窗口获取子窗口的值：利用window.name; -> 每个窗口都是独立的document文档，所以window对象上的属性自然也是不通用的(某个窗口设置window.aa=10;另一个窗口window.aa是获取不到该值的)，但是window.name是特殊值，其等同于“刻在了窗口上”，与网页内容无关 ->解决方案：父窗口同源下新增文件，将此新增文件动态添加到父窗口引入的iframe框架的src上，由于新增文件与子文件同处一个iframe框架(窗口)，所以window.name是不变的，父窗口可以成功拿到同源下新增文件的window，自然可以拿到window.name，完美解决了(非同源下，其拿不到子窗口的window,所以借助了一层，类似于代理)  
+        */
+
+        // 子窗口获取父窗口的值
+        var age= 38;
+        var oSrc = oIframe.src
+        document.onclick = function(){    
+            oIframe.src = oSrc + "#" + age;
+            age ++;
+        }
+
+        // 父窗口获取子窗口的值
+        var flag = true;
+        oIframe.onload = function(){
+            if(flag){
+                oIframe.src = './代理.html'
+                flag = false;
+            }else{
+                console.log(oIframe.contentWindow.name);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+        
+
+      
+
+
+
+    
+    
+    
+    </script>
+</body>
+</html>

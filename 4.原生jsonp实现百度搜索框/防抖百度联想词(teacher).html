@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        #box {
+            margin: 100px;
+        }
+        #wd{
+            width: 400px;
+            height: 40px;
+        }
+        #list{
+            display: none;
+            width: 400px;
+            border: 1px solid #ccc;
+        }
+        li{
+            list-style: none;
+            padding: 5px;
+        }
+        a{
+            text-decoration: none;
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="box">
+        <input type="text" id="wd">
+        <ul id="list"></ul>      
+    </div>
+
+    <script>
+        var wd = document.getElementById('wd');
+        var oUl = document.getElementById('list');
+
+        wd.oninput = debounce(getUserAction, 100, false);
+        function debounce(func, wait, immediate) {      
+            var timer = null; 
+            var result;
+            var debounced = function () {
+                var _this = this;
+                var argu = arguments;
+                clearTimeout(timer);
+                if(immediate) {
+                    if(!timer) func.apply(_this, argu);
+                    timer = setTimeout(function () {
+                        timer = null;
+                    }, wait) 
+                }else {
+                    timer = setTimeout(function () {
+                        func.apply(_this, argu);
+                    }, wait)
+                }
+                return result;
+            }
+            debounced.cancel = function () {
+                clearTimeout(timer);
+                timer = null;
+            }
+            return debounced;
+        }
+        function getUserAction() {
+            if(wd.value) {
+                var oScript = document.createElement('script');
+                oScript.src = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?wd=' + wd.value +'&cb=doJson';
+                document.body.appendChild(oScript);
+                document.body.removeChild(oScript);
+            }else {
+                oUl.style.display = 'none';
+            }
+        }
+        function doJson(data) {
+            var dataList = data.s;
+            oUl.innerHTML = '';
+            if(dataList.length == 0) {
+                oUl.style.display = 'none';
+            }else {
+                dataList.forEach(function(item, index) {
+                    var oLi = document.createElement('li');
+                    var oA = document.createElement('a');
+                    oA.href = 'https://www.baidu.com/s?wd=' + item;
+                    oA.innerText = item;
+                    oLi.appendChild(oA);
+                    oUl.appendChild(oLi);
+                    oUl.style.display = 'block';
+                })  
+            }
+            
+        }
+    
+    
+    </script>
+    
+</body>
+</html>

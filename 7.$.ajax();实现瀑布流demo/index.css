@@ -1,0 +1,33 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+}
+.wrapper {
+    width: 960px;
+    margin: 100px auto;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+.wrapper ul{
+     /* bfc模式：撑开ul(清除浮动li对ul的影响) */
+     display: inline-block;
+}
+.wrapper ul li{
+    float: left;
+}
+.wrapper ul li div{
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin: 0 5px;
+}
+.wrapper ul li div img{
+    width: 100%;
+}
+
+.loading{
+    font-size: 30px;
+    color: darkgrey;
+    display: none;
+}

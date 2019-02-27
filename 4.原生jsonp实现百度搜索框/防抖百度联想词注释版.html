@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #inp{
+            width: 300px;
+            height: 30px;
+            padding-left: 20px;
+        }
+        #btn{ 
+            height: 30px;
+        } 
+        #wrapper{
+            width: 324px;
+            display: none;
+        }
+        /* ul不设置宽/高,那其就等于是父级的宽/高 */
+        #wrapper ul{
+            margin: 0px;
+            padding: 0px;
+            list-style: none;
+            border: 2px solid #ccc;
+        }
+        #wrapper ul li{
+            padding: 5px;         
+        }
+        #wrapper ul li:hover{
+            background-color:darkgrey;
+        }
+        #wrapper ul li a{
+            font-size: 12px;
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }      
+    </style>
+</head>
+<body>
+    <input type="text" id="inp">
+    <input type="button" value="搜索" id="btn">
+    <div id="wrapper"></div>
+    <script>
+        var oInp = document.getElementById("inp");
+        var oWrapper = document.getElementById("wrapper");
+        // 处理数据
+        function aa(data){
+            // console.log(data.s);
+            oWrapper.innerHTML = '';
+            var oUl = document.createElement("ul");
+            var list = data.s
+            if(list.length < 4){
+                len = list.length;
+            }else{ len = 4}
+            for(var i=0; i<len;i++){  
+                var oLi = document.createElement('li');
+                oLi.innerHTML = "<a href="+"https://www.baidu.com/s?wd="+list[i]+">"+list[i]+"</a>" 
+                oUl.appendChild(oLi);
+            }
+            oWrapper.appendChild(oUl);
+            oWrapper.style.display = 'block';
+
+            // 字符串拼接的方式插入元素更节省性能
+            // var str = "";
+            // str += "<li>"+list[i]+"</li>"
+            // console.log(i);
+            // oUl.innerHTML = str;
+        }
+        // jsonp跨域获取数据
+        oInp.oninput = function(){
+            var timer = null;
+            var self = this;
+            clearTimeout(timer);
+            // 定时器作用：防抖
+            timer = setTimeout(function(){
+                // jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su','cb','aa',{wd:self.value})
+                jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su','cb','aa',"wd="+self.value)
+                // var oScript = document.createElement('script');
+                // oScript.src = 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?cb=aa&wd='+self.value;
+                // document.body.appendChild(oScript);
+                // oScript.remove();
+            },1000)       
+        }
+
+        // 封装jsonp:
+        function jsonp(url,cbName,cb,data){
+            var oScript = document.createElement('script');
+                // oScript.src = url+'?'+ cbName+'='+cb+ '&wd='+self.value;
+                var src = url + '?' +cbName + '=' +cb;
+                // data可以是字符串也可以是对象/数组
+                if(typeof data == 'string'){
+                    src += "&" + data;
+                }else{
+                    for(var prop in data){
+                        if(data.hasOwnProperty(prop)){
+                            src+= "&" + prop + '=' + data[prop]
+                        }
+                    }
+                }
+                oScript.src = src;
+                document.body.appendChild(oScript);
+                oScript.remove();
+        }
+
+        // 小结：css样式布局如何更加有技巧，更加精准； 写js代码的时候注重扩展性，要有封装的编程思维，同时编程过程中实现同一功能要去想多种解决方案；
+    </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+请求方式： GET
+地址: 'http://data.duyiedu.com/api/chat'
+请求数据： text: '你好'
+返回数据： text: '你好'
